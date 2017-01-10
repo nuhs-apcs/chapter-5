@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-Follow [these instructions](github.com/nuhs-apcs/chapter-4) from the Chapter 4 Labs to get started.
+Follow [these instructions](https://github.com/nuhs-apcs/chapter-4) from the Chapter 4 Labs to get started.
 
 ## Library Catalog
 
