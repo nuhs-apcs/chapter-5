@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import library.api.*;
-import library.core.*;
 
 public class LibraryCatalogTest {
 	
@@ -56,17 +55,17 @@ public class LibraryCatalogTest {
 	
 	@Test
 	public void testAddAndRemoveItem() {
-		int itemsToAdd = 4;
+		int copiesToAdd = 4;
 		CatalogItem firstItem = catalog.getUniqueItems().get(0);
 		int size = catalog.size();
 		int id = catalog.getItemId(firstItem);
-		catalog.addItems(firstItem, itemsToAdd);
-		int copies = catalog.getCopiesOfItem(id);
+		firstItem.addCopies(copiesToAdd);
+		int copies = firstItem.getCopies();
 		assertTrue("catalog size is updated properly", catalog.size() == size);
-		assertEquals("catalog item copies are updated properly", copies + itemsToAdd, catalog.getCopiesOfItem(id));
+		assertEquals("catalog item copies are updated properly", copies + copiesToAdd, firstItem.getCopies());
 		catalog.removeItem(id);
 		assertEquals("catalog size is updated properly (and remove works)", size, catalog.size());
-		assertEquals("catalog item copies are updated properly", copies, catalog.getCopiesOfItem(id));
+		assertEquals("catalog item copies are updated properly", copies, firstItem.getCopies());
 	}
 	
 	@Test
@@ -76,8 +75,8 @@ public class LibraryCatalogTest {
 		assertFalse("checkIn() fails properly", firstItem.checkIn(card));
 		assertTrue("checkOut() works properly", firstItem.checkOut(card));
 		int id = catalog.getItemId(firstItem);
-		catalog.removeItems(id, catalog.getCopiesOfItem(id));
-		assertEquals("removeItem() doesn't remove checked out items", 1, catalog.getCopiesOfItem(id));
+		catalog.removeItem(id);
+		assertTrue("removeItem() doesn't remove checked out items", firstItem.getCopies() != 0);
 		assertFalse("checkOut() fails properly", firstItem.checkOut(card));
 		assertTrue("library card getCheckedOutItems() works", 
 				card.getCheckedOutItems().size() == 1

@@ -16,28 +16,11 @@ public interface LibraryCatalog {
 	public int addItem(CatalogItem item);
 	
 	/**
-	 * 
-	 * Add multiple copies of an item to the catalog.
-	 * @param item
-	 * @param copies
-	 * @see #addItem(CatalogItem)
-	 */
-	public int addItems(CatalogItem item, int copies);
-	
-	/**
 	 * Remove an item from the catalog if possible. Items that are currently
 	 * checked out may not be removed.
 	 * @param id
 	 */
 	public void removeItem(int id);
-	
-	/**
-	 * Removes multiple copies (as many as possible) of an item from the catalog.
-	 * @param id
-	 * @param copies
-	 * @see #removeItem(int)
-	 */
-	public void removeItems(int id, int copies);
 	
 	/**
 	 * Test whether an item with the provided id exists in 
@@ -60,13 +43,6 @@ public interface LibraryCatalog {
 	 * @return the item's id
 	 */
 	public int getItemId(CatalogItem item);
-	
-	/**
-	 * Get the number of copies of a particular item.
-	 * @param id
-	 * @return the number of copies
-	 */
-	public int getCopiesOfItem(int id);
 	
 	/**
 	 * Return a list of all the unique items in the catalog.
