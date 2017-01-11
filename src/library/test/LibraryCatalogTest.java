@@ -15,68 +15,75 @@ import library.core.*;
 public class LibraryCatalogTest {
 	
 	private LibraryCatalog catalog;
-	private Cardholder cardholder;
+	private LibraryCard card;
 	
 	@Before
 	public void setupCatalog() {		
-		// initialize the catalog and cardholder variables
-		// catalog = new LibraryCatalogImpl();
+		// initialize the catalog and card variables
 		// YOUR CODE HERE
+		// catalog = new LibraryCatalogImpl();
 		
 		// add some items to the catalog
-		// catalog.addItem(new Book("Moby-Dick", "Herman Melville"));
 		// YOUR CODE HERE
+		// catalog.addItem(new Book("Moby-Dick", "Herman Melville"));
 		
-		assertTrue("did you forget to fill in setupCatalog()?", catalog != null && cardholder != null);
+		assertTrue("did you forget to fill in setupCatalog()?", catalog != null && card != null);
 		assertTrue("did you forget to add some items to the catalog?", catalog.size() >= 3);
 	}
 	
 	@Test
-	public void testItemMembership() {
-		CatalogItem firstItem = catalog.getItems().get(0);
-		int id = catalog.getIdOfItem(firstItem);
-		assertEquals("item id works", firstItem, catalog.getItem(id));
+	public void testItemMembershipAndCopies() {
+		CatalogItem firstItem = catalog.getUniqueItems().get(0);
+		int id = catalog.getItemId(firstItem);
+		assertEquals("item id works", firstItem, catalog.getItemById(id));
 		assertTrue("hasItemWithId() works", catalog.hasItemWithId(id));
 	}
 	
 	@Test
 	public void testCatalogSize() {
-		List<CatalogItem> items = catalog.getItems();
+		List<CatalogItem> items = catalog.getUniqueItems();
 		assertEquals("catalog size is correct", items.size(), catalog.size());
 	}
 	
 	@Test
 	public void testUniqueItems() {
-		Set<Class> classes = new HashSet<Class>();
-		for (CatalogItem item : catalog.getItems()) {
+		Set<Class<?>> classes = new HashSet<Class<?>>();
+		for (CatalogItem item : catalog.getUniqueItems()) {
 			classes.add(item.getClass());
-			String s = item.toString();
-			assertFalse("toString() methods must be defined for CatalogItems", s.contains("@"));
 		}
 		assertTrue("there must be at least three unique CatalogItem classes", classes.size() >= 3);
 	}
 	
 	@Test
 	public void testAddAndRemoveItem() {
-		CatalogItem firstItem = catalog.getItems().get(0);
-		int sizeBefore = catalog.size();
-		int id = catalog.addItem(firstItem);
-		assertTrue("catalog size is updated properly", catalog.size() == (sizeBefore + 1));
+		int itemsToAdd = 4;
+		CatalogItem firstItem = catalog.getUniqueItems().get(0);
+		int size = catalog.size();
+		int id = catalog.getItemId(firstItem);
+		catalog.addItems(firstItem, itemsToAdd);
+		int copies = catalog.getCopiesOfItem(id);
+		assertTrue("catalog size is updated properly", catalog.size() == size);
+		assertEquals("catalog item copies are updated properly", copies + itemsToAdd, catalog.getCopiesOfItem(id));
 		catalog.removeItem(id);
-		assertTrue("catalog size is updated properly (and remove works)", catalog.size() == sizeBefore);
+		assertEquals("catalog size is updated properly (and remove works)", size, catalog.size());
+		assertEquals("catalog item copies are updated properly", copies, catalog.getCopiesOfItem(id));
 	}
 	
 	@Test
 	public void testItemCheckInAndOut() {
-		CatalogItem firstItem = catalog.getItems().get(0);
-		assertTrue("cardholder has 0 checked out items to begin", cardholder.getItems().size() == 0);
-		firstItem.checkOut(cardholder);
-		assertTrue("cardholder getItems() works", cardholder.getItems().size() == 1 && cardholder.getItems().get(0) == firstItem);
-		assertTrue("isCheckedOut() works", firstItem.isCheckedOut());
-		assertTrue("getCardHolder() works", firstItem.getCardholder() == cardholder);
-		firstItem.checkIn();
-		assertTrue("checking in removes the item from the cardholder", cardholder.getItems().size() == 0);
-		assertFalse("isCheckedOut() works", firstItem.isCheckedOut());
+		CatalogItem firstItem = catalog.getUniqueItems().get(0);
+		assertEquals("library card has 0 checked out items to begin", 0, card.getCheckedOutItems().size());
+		assertFalse("checkIn() fails properly", firstItem.checkIn(card));
+		assertTrue("checkOut() works properly", firstItem.checkOut(card));
+		int id = catalog.getItemId(firstItem);
+		catalog.removeItems(id, catalog.getCopiesOfItem(id));
+		assertEquals("removeItem() doesn't remove checked out items", 1, catalog.getCopiesOfItem(id));
+		assertFalse("checkOut() fails properly", firstItem.checkOut(card));
+		assertTrue("library card getCheckedOutItems() works", 
+				card.getCheckedOutItems().size() == 1
+				&& card.getCheckedOutItems().get(0) == firstItem);
+		assertTrue("checkIn() works properly", firstItem.checkIn(card));
+		assertEquals("checking in removes the item from the card", 0, card.getCheckedOutItems().size());
 	}
 
 }
